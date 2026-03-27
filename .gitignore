@@ -48,3 +48,5 @@ tmp/
 *.swp
 *.swo
 *.sublime-workspace
+
+gcp.json
