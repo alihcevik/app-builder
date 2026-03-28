@@ -1,6 +1,7 @@
 ---
 name: environment-setup
 description: Set up the development and deployment environment for Next.js apps. Use when tools like 'vercel' or 'create-next-app' are missing, or when asked to "prepare the environment" for app building.
+user-invocable: true
 metadata:
   author: vercel
   version: "1.0.0"

@@ -15,20 +15,46 @@ if [ "$APP_NAME" != "." ]; then
     cd "$APP_NAME"
 fi
 
-# 1. Initialize package.json if it doesn't exist
-if [ ! -f package.json ]; then
-    npm init -y > /dev/null
-fi
+# 1. Initialize package.json with pinned versions to save resolution time
+echo "📝 Creating package.json..."
+cat <<'EOF' > package.json
+{
+  "name": "nextjs-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "next": "16.2.1",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.0",
+    "@types/node": "^20.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "16.2.1",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.0.0",
+    "postcss": "^8.0.0"
+  }
+}
+EOF
 
-# 2. Install core dependencies
-echo "📦 Installing Next.js, React, and React DOM..."
-npm install next@latest react@latest react-dom@latest lucide-react --silent
+# 2. Install all dependencies in one go with efficiency flags
+echo "📦 Installing dependencies (optimized)..."
+npm install --no-audit --no-fund --loglevel error --silent || {
+    echo "⚠️ npm install failed. Attempting with --no-package-lock..."
+    npm install --no-audit --no-fund --no-package-lock --loglevel error --silent
+}
 
-# 3. Install dev dependencies (TypeScript, Tailwind, PostCSS, ESLint)
-echo "📦 Installing dev dependencies..."
-npm install -D typescript @types/node @types/react @types/react-dom tailwindcss @tailwindcss/postcss postcss autoprefixer eslint eslint-config-next --silent
-
-# 4. Create Next.js configuration (Next.js 16+ uses next.config.ts)
+# 3. Create Next.js configuration (Next.js 16+ uses next.config.ts)
 echo "⚙️ Configuring Next.js (Standalone mode for Cloud Run)..."
 cat <<EOF > next.config.ts
 import type { NextConfig } from 'next';
@@ -153,20 +179,5 @@ body {
 }
 EOF
 
-# 11. Update package.json scripts
-echo "📝 Updating package.json scripts..."
-# Use node to update scripts in package.json safely
-node -e "
-const fs = require('fs');
-const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-pkg.scripts = {
-  ...pkg.scripts,
-  'dev': 'next dev',
-  'build': 'next build',
-  'start': 'next start',
-  'lint': 'eslint'
-};
-fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
-"
-
+# 11. Finalizing
 echo "✨ Manual Next.js scaffolding complete!"
