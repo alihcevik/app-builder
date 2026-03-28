@@ -17,26 +17,28 @@ Ensure the host environment is ready for building and deploying Next.js applicat
 
 ## Usage
 
-### Automating with Script
-Run the bundled setup script to ensure all global CLI tools are installed and in the PATH:
+### 1. Environment Initialization
+Run the bundled setup script to ensure necessary global CLI tools (like 'vercel') are present:
 
 ```bash
 bash skills/environment-setup/scripts/setup.sh
 ```
 
+### 2. Manual Scaffolding (Recommended)
+In many restricted or sandbox environments, `create-next-app` fails because it tries to access protected system files (like `/etc/passwd`). Use the manual scaffolding script instead:
+
+```bash
+bash skills/environment-setup/scripts/scaffold.sh [app-name]
+```
+
 This script will:
-- Verify Node.js, npm, and git are present.
-- Install `vercel` and `create-next-app` globally.
-- Confirm they are available for use.
-
-### Manual Verification
-If the script cannot be run, manually ensure these tools are available:
-
-1. **Vercel CLI**: `npm install -g vercel` (for deployments).
-2. **create-next-app**: `npm install -g create-next-app` (for scaffolding).
-3. **git**: (via your platform's package manager like `apt`, `brew`, or `yum`).
+- Initialize `package.json` and install core Next.js, React, and dev dependencies.
+- Configure Tailwind CSS 4, PostCSS, and TypeScript.
+- Set up `next.config.ts` with `output: 'standalone'` for Cloud Run compatibility.
+- Create a standard `app/` directory structure with layout and home page.
 
 ## Troubleshooting
 
-- **Permissions Error**: If `npm install -g` fails, the environment might require `sudo` or be configured with a prefix.
-- **npx Fallback**: If global installation is not possible, fall back to `npx <tool>` for execution, though it will be slower as it downloads each time.
+- **Permissions Error**: If `npm install` fails, the environment might require `sudo`.
+- **System Errors**: If you encounter `uv_os_get_passwd` errors, you are likely using `create-next-app` in a restricted environment. Switch to `scaffold.sh`.
+- **Vercel Deployment**: Always use a token with `--token <token> -y` for non-interactive environments to avoid interactive login prompts.

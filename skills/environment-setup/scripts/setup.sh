@@ -31,10 +31,10 @@ else
 fi
 
 # 4. Install Global CLI Tools
-echo "📦 Attempting to install global CLI tools (vercel, create-next-app)..."
+echo "📦 Attempting to install global CLI tools (vercel)..."
 # Using -g ensures they are "plug and play" without npx download delays
-npm install -g vercel create-next-app --silent || {
-    echo "⚠️ Global installation failed (likely due to permissions or restricted env). Falling back to using npx for these tools."
+npm install -g vercel --silent || {
+    echo "⚠️ Global installation failed (likely due to permissions or restricted env). Falling back to using npx for vercel."
 }
 
 # 5. Verify CLI Tools
@@ -42,12 +42,6 @@ if command -v vercel &> /dev/null; then
     echo "✅ Vercel CLI $(vercel --version) installed globally."
 else
     echo "💡 Vercel CLI will be used via 'npx vercel' when needed."
-fi
-
-if command -v create-next-app &> /dev/null; then
-    echo "✅ create-next-app installed globally."
-else
-    echo "💡 create-next-app will be used via 'npx create-next-app' when needed."
 fi
 
 echo "✨ Environment is ready for App Building!"
